@@ -1,0 +1,62 @@
+<style>
+  ul, li {list-style: none}
+
+</style>
+
+<script type="text/javascript" src="/js/axios.js"></script>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript">
+  
+  function remove(catId) {
+    axios.delete('/cat/' +catId ).then(() => {
+      window.location.reload();
+    }).catch(err => {
+      alert(err.message);
+    })
+  }
+
+  function edit(obj, id) {
+    var name = $(obj).siblings('.txtName').val()
+    if(name == '') {
+      alert('名称不能为空');
+      return;
+    }
+
+    axios.put('/cat', {_id:id,name:name}).then(() => {
+      window.location.reload();
+    }).catch(err => {
+      alert(err.message);
+    })
+  }
+
+  function create() {
+    var name = $('#txtCreateName').val().trim();
+    if(name == '') {
+      alert('名称不能为空');
+      return;
+    }
+
+    axios.post('/cat', {name:name}).then(() => {
+      window.location.reload();
+    }).catch(err => {
+      alert(err.message);
+    })
+  }
+</script>
+
+<div>cats demo</div>
+<div>
+  <input type="" id='txtCreateName' />
+  <button onclick="create()">添加</button>
+</div>
+<% if (cats.length) { %>  
+  <ul>  
+    <% cats.forEach(function(cat){ %>  
+      <li foo='<%= cat.name + "'" %>'>
+        <input value='<%= cat.name %>' class='txtName' />
+        <button onclick='remove("<%= cat._id %>")'>删除</button>  
+        <button onclick='edit(this, "<%= cat._id %>")'>编辑</button>  
+      </li>  
+    <% }) %>  
+  </ul>  
+<% } %>
