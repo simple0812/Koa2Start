@@ -19,9 +19,8 @@ exports.renderFoo = async (ctx) => {
 };
 
 exports.getString = async (ctx) => {
-  console.log('zzz', {a:1});
   await Promise.delay(10); //模拟异步操作
-  ctx.body = 'this is a stringxxxax';
+  ctx.body = 'this is a string';
 };
 
 exports.getJson = async (ctx) => {

@@ -1,8 +1,7 @@
 var router = require('koa-router')();
 var Promise = require('bluebird');
 var responseHelper = require('../utils/responseHelper');
-var formidable = require("formidable");
-var common = require('../utils/common')
+var common = require('../utils/common');
 
 /*一些常用操作的示例 如获取参数、解析form表单、读写cookie等*/
 router.prefix('/bar');
