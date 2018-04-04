@@ -81,7 +81,7 @@ app.use(async (ctx, next) => {
 
 // 添加seo信息(title, keyword, description)
 app.use(async (ctx, next) => {
-  var seo = seoConfig[ctx.request.url] || {};
+  var seo = seoConfig[ctx.request.url] || seoConfig.default;
   var xRender = ctx.render;
 
   ctx.render = async function(tmpl, data) {

@@ -1,4 +1,9 @@
 module.exports = {
+  default:{
+    title:'vgcool',
+    keywords:'vgcool, vgcool',
+    description:'vgcool'
+  },
   '/':{
     title:'index',
     keywords:'index, index',
