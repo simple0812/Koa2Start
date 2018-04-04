@@ -6,7 +6,7 @@ exports.getById = async () => {
   var name = 'zhang';
 
   //模拟异步请求
-  return await Promise.resolve({id, name});
+  return await Promise.reject({id, name});
 };
 
 exports.getSomething = async () => {

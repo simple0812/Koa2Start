@@ -1,17 +1,69 @@
 var Promise = require('bluebird');
 var fooVM = require('../viewModels').foo;
 
-//获取参数及参数验证
 exports.render = async (ctx) => {
-  var vm = await fooVM.create();
+  try {
+    var vm = await fooVM.create();
+  } catch (e) {
+    await ctx.render('error/page404.html');
+    return;
+  }
 
   await ctx.render('index', {
-    title: 'Hello Koa 2!',
     ...vm
   });
 };
 
 exports.renderFoo = async (ctx) => {
+  await ctx.render('foo', {
+    title: 'Hello Koa 2!',
+    foo:'this is a stringxxaa'
+  });
+};
+
+function throwError() {
+  return Promise.reject(new Error('abc'))
+    .then(data => [null, data])
+    .catch(err => [err]);
+}
+
+exports.renderError = async (ctx) => {
+  var err, data;
+
+  [err, data] = await throwError();
+  if(err) {
+    return await ctx.render('error/page404.html');
+  }
+
+  await ctx.render('foo', {
+    title: 'Hello Koa 2!',
+    foo: data
+  });
+};
+
+//使用[err, data]的数据返回格式捕获异常
+exports.renderError = async (ctx) => {
+  var err, data;
+
+  [err, data] = await throwError();
+  if(err) {
+    return await ctx.render('error/page404.html');
+  }
+
+  await ctx.render('foo', {
+    title: 'Hello Koa 2!',
+    foo: data
+  });
+};
+
+//使用try/catch捕获异常
+exports.renderErrorWithCatch = async (ctx) => {
+  try {
+    await Promise.reject(new Error('abc'));
+  } catch(e) {
+    return await ctx.render('error/page404.html');
+  }
+
   await ctx.render('foo', {
     title: 'Hello Koa 2!',
     foo:'this is a stringxxaa'

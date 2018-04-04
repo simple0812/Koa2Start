@@ -1,23 +1,24 @@
-var Promise = require('bluebird');
 var services = require('../services');
 
-//装配页面所需的数据结构
-var vm = {
-  data:{
-    user:{},
-    something:{}
-  },
-  create: async () => {
+class FooVM {
+  constructor() {
+    this.data = {
+      title:'koa title',
+      keyword:'seo',
+      user:{},
+      something:{}
+    };
+  }
+
+  async create() {
     var user = await services.foo.getById();
     var something = await services.foo.getSomething();
 
-    vm.data = {
-      user,
-      something
-    }
+    this.data.user = user;
+    this.data.something = something;
 
-    return vm.data;
+    return this.data;
   }
 }
 
-module.exports = vm;
+module.exports = new FooVM();
