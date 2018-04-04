@@ -27,21 +27,7 @@ function throwError() {
     .catch(err => [err]);
 }
 
-exports.renderError = async (ctx) => {
-  var err, data;
-
-  [err, data] = await throwError();
-  if(err) {
-    return await ctx.render('error/page404.html');
-  }
-
-  await ctx.render('foo', {
-    title: 'Hello Koa 2!',
-    foo: data
-  });
-};
-
-//使用[err, data]的数据返回格式捕获异常
+//使用[err, data]的方式捕获异常
 exports.renderError = async (ctx) => {
   var err, data;
 
