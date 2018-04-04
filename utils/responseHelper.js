@@ -48,9 +48,10 @@ module.exports = (function() {
   }
 
   return {
-    getError: getError,
-    getSuccess: getSuccess,
-    pageSuccess: pageSuccess
+    getError,
+    getSuccess,
+    pageSuccess,
+    getListSuccess
   };
 
 })();

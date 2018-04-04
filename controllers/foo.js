@@ -5,7 +5,7 @@ exports.render = async (ctx) => {
   try {
     var vm = await fooVM.create();
   } catch (e) {
-    await ctx.render('error/page404.html');
+    await ctx.render('error/page404');
     return;
   }
 
@@ -33,7 +33,7 @@ exports.renderError = async (ctx) => {
 
   [err, data] = await throwError();
   if(err) {
-    return await ctx.render('error/page404.html');
+    return await ctx.render('error/page404');
   }
 
   await ctx.render('foo', {
@@ -47,7 +47,7 @@ exports.renderErrorWithCatch = async (ctx) => {
   try {
     await Promise.reject(new Error('abc'));
   } catch(e) {
-    return await ctx.render('error/page404.html');
+    return await ctx.render('error/page404');
   }
 
   await ctx.render('foo', {

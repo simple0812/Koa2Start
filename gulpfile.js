@@ -31,7 +31,7 @@ gulp.task('default', function() {
     script: 'bin/www', 
     // 忽略部分对程序运行无影响的文件的改动，nodemon只监视js文件，可用ext项来扩展别的文件类型 
     ignore: ['gulpfile.js', 'node_modules/', 'public/**/*.*'], 
-    env: { 'NODE_ENV': 'development' } 
+    env: { NODE_ENV: 'development' } 
   }).on('start', function() { 
     if(isRunning) {
       browserSync.reload();

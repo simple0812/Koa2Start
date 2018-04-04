@@ -3,8 +3,6 @@ var services = require('../services');
 class FooVM {
   constructor() {
     this.data = {
-      title:'koa title',
-      keyword:'seo',
       user:{},
       something:{}
     };

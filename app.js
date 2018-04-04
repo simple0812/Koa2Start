@@ -11,6 +11,7 @@ const cors = require('@koa/cors');
 const helmet = require('koa-helmet');
 var favicon = require('koa-favicon');
 var route = require('./routes');
+var seoConfig = require('./config/seo');
 //连接数据库
 // require('./models/db');
 
@@ -23,7 +24,7 @@ onerror(app);
 // app.use(route.post('/profile', upload.single('avatar')));
 // app.use(upload.single());
 app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(cors())
+app.use(cors());
 app.use(compress({
   filter: function (contentType) {
     return /text/i.test(contentType);
@@ -57,12 +58,24 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
 
+// 添加seo信息(title, keyword, description)
+app.use(async (ctx, next) => {
+  var seo = seoConfig[ctx.request.url] || {};
+  var xRender = ctx.render;
+
+  ctx.render = async function(tmpl, data) {
+    await xRender(tmpl, {...data, seo});
+  };
+
+  await next();
+});
+
 // routes
 route(app);
 
 //404
 app.use(async (ctx, next) => {
-  await ctx.render('error/page404.html');
+  await ctx.render('error/page404');
   next();
 });
 
