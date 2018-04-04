@@ -1,3 +1,4 @@
+var path = require('path');
 const Koa = require('koa');
 const app = new Koa();
 const views = require('koa-views');
@@ -12,6 +13,25 @@ const helmet = require('koa-helmet');
 var favicon = require('koa-favicon');
 var route = require('./routes');
 var seoConfig = require('./config/seo');
+var ejsLocals = require('ejs-locals');
+
+//使用ejs-locals作为模版引擎
+function engine(file, options) {
+  return new Promise((resolve, reject) => {
+    options.settings = {
+      ['view engine']:'ejs',
+      views: path.join(__dirname, 'views')
+    };
+    ejsLocals(file, options, function(err, html) {
+      if(err) {
+        return reject(err);
+      }
+
+      resolve(html);
+    });
+  });
+}
+
 //连接数据库
 // require('./models/db');
 
@@ -44,7 +64,8 @@ app.use(logger());
 app.use(require('koa-static')(__dirname + '/public'));
 
 app.use(views(__dirname + '/views', {
-  extension: 'ejs'
+  extension: 'ejs',
+  engineSource: {ejs: engine }
 }));
 
 // logger

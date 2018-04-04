@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= seo.title  %></title>
+    <meta name="keywords" content="<%= seo.keywords %>"/>
+    <meta name="description" content="<%= seo.description %>" />
+    <%-scripts%>
+    <%-stylesheets%>
+  </head>
+  <body>
+    <header>
+      <%-include header%>
+    </header>
+    <section>
+      <%- body -%>
+    </section>
+    <footer>
+      <%-include footer%>
+    </footer>
+  </body>
+</html>
