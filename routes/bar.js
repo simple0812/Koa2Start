@@ -22,6 +22,16 @@ router.get('/async', async (ctx) => {
   };
 });
 
+//支持正则表达式
+router.get('/:foo/b(a+)', async (ctx) => {
+  await Promise.delay(10);
+  
+  ctx.body = {
+    test:'reg', 
+    foo:ctx.params.foo
+  };
+});
+
 //获取url 路径上的参数
 router.get('/params/:id', function (ctx) {
   var id = ctx.params.id;

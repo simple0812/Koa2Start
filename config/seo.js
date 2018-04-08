@@ -18,5 +18,10 @@ module.exports = {
     title:'string error',
     keywords:'string, error',
     description:'string string string'
+  },
+  '/error/catch/:id':{
+    title:'string error',
+    keywords:'string, error',
+    description:'string string string'
   }
 };

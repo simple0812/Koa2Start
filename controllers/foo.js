@@ -33,7 +33,7 @@ exports.renderError = async (ctx) => {
 
   [err, data] = await throwError();
   if(err) {
-    return await ctx.render('error/page404');
+    return await ctx.render('error/page500');
   }
 
   await ctx.render('foo', {

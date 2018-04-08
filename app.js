@@ -5,7 +5,7 @@ const views = require('koa-views');
 const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
-const logger = require('koa-logger');
+// const logger = require('koa-logger');
 // const multer = require('koa-multer');
 var compress = require('koa-compress');
 const cors = require('@koa/cors');
@@ -14,6 +14,7 @@ var favicon = require('koa-favicon');
 var route = require('./routes');
 var seoConfig = require('./config/seo');
 var ejsLocals = require('ejs-locals');
+var filesize = require('filesize');
 
 //使用ejs-locals作为模版引擎
 function engine(file, options) {
@@ -60,7 +61,7 @@ app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
 }));
 app.use(json());
-app.use(logger());
+// app.use(logger()); //输出每次请求和响应的相关信息(如地址、包的大小)， 包括静态资源
 app.use(require('koa-static')(__dirname + '/public'));
 
 app.use(views(__dirname + '/views', {
@@ -68,23 +69,32 @@ app.use(views(__dirname + '/views', {
   engineSource: {ejs: engine }
 }));
 
-// logger
+// logger 使用pm2管理后 并不需要自定义记录logger文件
 app.use(async (ctx, next) => {
   const start = new Date();
 
   await next();
 
-  const ms = new Date() - start;
+  var ms = new Date() - start;
+  var contentLength = ctx.res.getHeader('content-length') || 0;
 
-  console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
+  console.log(`${ctx.method} ${ctx.url} ${ctx.status} - ${ms}ms :${filesize(contentLength, {bits:true})}`);
 });
 
 // 添加seo信息(title, keyword, description)
 app.use(async (ctx, next) => {
-  var seo = seoConfig[ctx.request.url] || seoConfig.default;
+  var seo = seoConfig.default;
   var xRender = ctx.render;
 
   ctx.render = async function(tmpl, data) {
+    if(ctx.matched && ctx.matched.length) {
+      var xPath = ctx.matched[0].path;
+
+      if(seoConfig[xPath]) {
+        seo = seoConfig[xPath];
+      }
+    }
+
     await xRender(tmpl, {...data, seo});
   };
 
