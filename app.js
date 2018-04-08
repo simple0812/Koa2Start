@@ -5,7 +5,6 @@ const views = require('koa-views');
 const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
-// const logger = require('koa-logger');
 // const multer = require('koa-multer');
 var compress = require('koa-compress');
 const cors = require('@koa/cors');
@@ -61,7 +60,6 @@ app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
 }));
 app.use(json());
-// app.use(logger()); //输出每次请求和响应的相关信息(如地址、包的大小)， 包括静态资源
 app.use(require('koa-static')(__dirname + '/public'));
 
 app.use(views(__dirname + '/views', {
