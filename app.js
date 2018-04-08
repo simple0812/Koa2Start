@@ -14,6 +14,10 @@ var route = require('./routes');
 var seoConfig = require('./config/seo');
 var ejsLocals = require('ejs-locals');
 var filesize = require('filesize');
+var log4js = require('log4js');
+var logger = require('./config/logger');
+
+log4js.configure(logger);
 
 //使用ejs-locals作为模版引擎
 function engine(file, options) {
