@@ -1,19 +1,24 @@
-var path = require('path');
+const path = require('path');
 const Koa = require('koa');
+const http = require('http');
 const app = new Koa();
 const views = require('koa-views');
 const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
 // const multer = require('koa-multer');
-var compress = require('koa-compress');
+const compress = require('koa-compress');
 const cors = require('@koa/cors');
 const helmet = require('koa-helmet');
+const fs = require('fs');
+
 var favicon = require('koa-favicon');
 var route = require('./routes');
 var seoConfig = require('./config/seo');
 var ejsLocals = require('ejs-locals');
+var ejs = require('ejs');
 var filesize = require('filesize');
+var moment = require('moment');
 var log4js = require('log4js');
 var logger = require('./config/logger');
 
@@ -42,8 +47,7 @@ function engine(file, options) {
 app.keys = ['koa', 'test'];
 
 // error handler
-onerror(app);
-
+// onerror(app);
 //上传图片
 // app.use(route.post('/profile', upload.single('avatar')));
 // app.use(upload.single());
@@ -71,7 +75,7 @@ app.use(views(__dirname + '/views', {
   engineSource: {ejs: engine }
 }));
 
-// logger 使用pm2管理后 并不需要自定义记录logger文件
+// logger
 app.use(async (ctx, next) => {
   const start = new Date();
 
@@ -80,7 +84,7 @@ app.use(async (ctx, next) => {
   var ms = new Date() - start;
   var contentLength = ctx.res.getHeader('content-length') || 0;
 
-  console.log(`${ctx.method} ${ctx.url} ${ctx.status} - ${ms}ms :${filesize(contentLength, {bits:true})}`);
+  console.log(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${ctx.method} ${ctx.url} ${ctx.status} - ${ms}ms :${filesize(contentLength, {bits:true})}`);
 });
 
 // 添加seo信息(title, keyword, description)
@@ -113,12 +117,46 @@ app.use(async (ctx, next) => {
 });
 
 //服务端错误 error-handling
-app.on('error', (err) => {
-  console.log('server error->', err.message);
-  // ctx.response.status = 500;
-  // ctx.res.end(err.stack);
-
-  // ctx.res.status(err.status || 500).send(err.message || '500 status');
+app.on('error', (err, ctx) => {
+  log4js.getLogger().error(`app error ${ctx.request.url}-> ${err.message}`);
 });
+
+app.context.onerror = function(err) {
+  if(!err) {
+    return;
+  }
+
+  if (err.code === 'ENOENT') {
+    err.status = 404;
+  }
+
+  if (typeof err.status !== 'number' || !http.STATUS_CODES[err.status]) {
+    err.status = 500;
+  }
+
+  this.app.emit('error', err, this);
+
+  this.response.status = err.status;
+
+  var errFile = 'views/error/error.ejs';
+  var env = process.env.NODE_ENV || 'development';
+
+  if(env !== 'development') {
+    if(err.status === 404) {
+      errFile = 'views/error/page404.ejs';
+    } else if(err.status === 500) {
+      errFile = 'views/error/page500.ejs';
+    }
+  }
+
+  var template = fs.readFileSync(errFile, 'utf-8');
+
+  err.status = err.status;
+  var html = ejs.render(template, err);
+
+  this.res.status = err.status;
+  this.res.setHeader('content-type','text/html; charset=utf-8');
+  this.res.end(html);
+};
 
 module.exports = app;

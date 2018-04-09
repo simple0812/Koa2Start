@@ -2,6 +2,8 @@ var router = require('koa-router')();
 var Promise = require('bluebird');
 var responseHelper = require('../utils/responseHelper');
 var common = require('../utils/common');
+var ejs = require('ejs');
+var fs = require('fs');
 
 /*一些常用操作的示例 如获取参数、解析form表单、读写cookie等*/
 router.prefix('/bar');
@@ -99,6 +101,11 @@ router.get('/error', async (ctx) => {
     test:'query', 
     foo:'bar'
   };
+});
+
+router.get('/render/error',async () => {
+  // await Promise.reject(new Error('something error'));
+  throw new Error('zzzz');
 });
 
 module.exports = router;
