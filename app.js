@@ -4,7 +4,7 @@ const http = require('http');
 const app = new Koa();
 const views = require('koa-views');
 const json = require('koa-json');
-const onerror = require('koa-onerror');
+// const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
 // const multer = require('koa-multer');
 const compress = require('koa-compress');
@@ -149,7 +149,7 @@ app.context.onerror = function(err) {
     }
   }
 
-  var template = fs.readFileSync(errFile, 'utf-8');
+  var template = fs.readFileSync(path.join(__dirname, errFile), 'utf-8');
 
   err.status = err.status;
   var html = ejs.render(template, err);
