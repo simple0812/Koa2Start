@@ -17,6 +17,7 @@
     "filesize": "^3.6.1",
     "formidable": "^1.2.0",
     "koa": "^2.2.0",
+    "koa-body": "^4.0.4",
     "koa-bodyparser": "^3.2.0",
     "koa-compress": "^2.0.0",
     "koa-convert": "^1.2.0",
@@ -26,6 +27,7 @@
     "koa-multer": "^1.0.2",
     "koa-onerror": "^1.2.1",
     "koa-router": "^7.1.1",
+    "koa-session": "^5.8.2",
     "koa-static": "^3.0.0",
     "koa-views": "^5.2.1",
     "lodash": "^4.17.5",
@@ -39,9 +41,12 @@
   "devDependencies": {
     "babel-eslint": "^8.2.2",
     "browser-sync": "^2.23.6",
+    "chromedriver": "^2.37.0",
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.2.1",
+    "nightwatch": "^0.9.20",
     "nodemon": "^1.8.1",
-    "npm-run-all": "^4.1.2"
+    "npm-run-all": "^4.1.2",
+    "selenium-server": "^3.11.0"
   }
 }

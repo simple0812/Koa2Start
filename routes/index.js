@@ -1,8 +1,8 @@
-const bar = require('./bar');
+const params = require('./params');
 const foo = require('./foo');
 
 
 module.exports = function(app) {
-  app.use(bar.routes(), bar.allowedMethods());
+  app.use(params.routes(), params.allowedMethods());
   app.use(foo.routes(), foo.allowedMethods());
 };

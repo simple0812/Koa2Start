@@ -25,7 +25,7 @@ router.get('/async', async (ctx) => {
 });
 
 //支持正则表达式
-router.get('/:foo/b(a+)', async (ctx) => {
+router.get('/:foo/b(\\w+)', async (ctx) => {
   await Promise.delay(10);
   
   ctx.body = {
@@ -75,11 +75,31 @@ router.post('/cookie', async (ctx) => {
   ctx.body = responseHelper.getSuccess('set cookie success');
 });
 
+router.get('/session', (ctx) => {
+  var name = ctx.session.name || '';
+  var id = ctx.session.id || '';
+
+  ctx.body = responseHelper.getSuccess({id, name});
+});
+
+//获取post body参数
+router.post('/session', async (ctx) => {
+  var user = ctx.request.body || {};
+
+  if(!user.id || !user.name) {
+    ctx.body = responseHelper.getError('参数错误');
+    return;
+  }
+
+  ctx.session.name = user.name;
+  ctx.session.id = user.id;
+  ctx.body = responseHelper.getSuccess('set session success');
+});
+
 //解析form表单
 router.post('/cookie/form', async (ctx) => {
   var ret = await common.parseForm(ctx.req).catch(err => err);
 
-  console.log(ret);
   if(!ret.files || !ret.fields) {
     return responseHelper.getError('解析失败');
   }
@@ -104,7 +124,7 @@ router.get('/error', async (ctx) => {
 });
 
 router.get('/render/error',async () => {
-  // await Promise.reject(new Error('something error'));
+  // await Promise.reject(new Error('something render error'));
   throw new Error('zzzz');
 });
 

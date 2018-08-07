@@ -1,25 +1,22 @@
-const path = require('path');
 const Koa = require('koa');
-const http = require('http');
+const path = require('path');
 const app = new Koa();
-const views = require('koa-views');
-const json = require('koa-json');
-// const onerror = require('koa-onerror');
-const bodyparser = require('koa-bodyparser');
-// const multer = require('koa-multer');
-const compress = require('koa-compress');
-const cors = require('@koa/cors');
-const helmet = require('koa-helmet');
-const fs = require('fs');
+const session = require('koa-session');
+const views = require('koa-views'); // 视图
+const onerror = require('koa-onerror'); // 处理全局error
+const bodyparser = require('koa-bodyparser'); // 解析http参数
+// const multer = require('koa-multer'); // 上传文件插件
+const compress = require('koa-compress'); // Compress middleware for Koa
+const cors = require('@koa/cors'); // Cross-Origin Resource Sharing(CORS) for koa
+const helmet = require('koa-helmet'); //  provides important security headers 
 
-var favicon = require('koa-favicon');
+var favicon = require('koa-favicon'); // 设置favicon
 var route = require('./routes');
 var seoConfig = require('./config/seo');
-var ejsLocals = require('ejs-locals');
-var ejs = require('ejs');
+var ejsLocals = require('ejs-locals'); // ejs模版扩展工具
 var filesize = require('filesize');
-var moment = require('moment');
-var log4js = require('log4js');
+var moment = require('moment'); 
+var log4js = require('log4js'); // 日志工具
 var logger = require('./config/logger');
 
 log4js.configure(logger);
@@ -42,12 +39,26 @@ function engine(file, options) {
 }
 
 //连接数据库
-// require('./models/db');
+require('./models/db');
 
 app.keys = ['koa', 'test'];
+const CONFIG = {
+  key: 'koa:sess', /** (string) cookie key (default is koa:sess) */
+  /** (number || 'session') maxAge in ms (default is 1 days) */
+  /** 'session' will result in a cookie that expires when session/browser is closed */
+  /** Warning: If a session cookie is stolen, this cookie will never expire */
+  maxAge: 86400000,
+  overwrite: true, /** (boolean) can overwrite or not (default true) */
+  httpOnly: true, /** (boolean) httpOnly or not (default true) */
+  signed: true, /** (boolean) signed or not (default true) */
+  rolling: false, /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false) */
+  renew: false /** (boolean) renew session when session is nearly expired, so we can always keep user logged in. (default is false)*/
+};
+ 
+app.use(session(CONFIG, app));
 
 // error handler
-// onerror(app);
+onerror(app);
 //上传图片
 // app.use(route.post('/profile', upload.single('avatar')));
 // app.use(upload.single());
@@ -64,10 +75,8 @@ app.use(compress({
 app.use(helmet());
 
 // middlewares
-app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
-}));
-app.use(json());
+app.use(bodyparser());
+
 app.use(require('koa-static')(__dirname + '/public'));
 
 app.use(views(__dirname + '/views', {
@@ -121,42 +130,42 @@ app.on('error', (err, ctx) => {
   log4js.getLogger().error(`app error ${ctx.request.url}-> ${err.message}`);
 });
 
-app.context.onerror = function(err) {
-  if(!err) {
-    return;
-  }
+// app.context.onerror = function(err) {
+//   if(!err) {
+//     return;
+//   }
 
-  if (err.code === 'ENOENT') {
-    err.status = 404;
-  }
+//   if (err.code === 'ENOENT') {
+//     err.status = 404;
+//   }
 
-  if (typeof err.status !== 'number' || !http.STATUS_CODES[err.status]) {
-    err.status = 500;
-  }
+//   if (typeof err.status !== 'number' || !http.STATUS_CODES[err.status]) {
+//     err.status = 500;
+//   }
 
-  this.app.emit('error', err, this);
+//   this.app.emit('error', err, this);
 
-  this.response.status = err.status;
+//   this.response.status = err.status;
 
-  var errFile = 'views/error/error.ejs';
-  var env = process.env.NODE_ENV || 'development';
+//   var errFile = 'views/error/error.ejs';
+//   var env = process.env.NODE_ENV || 'development';
 
-  if(env !== 'development') {
-    if(err.status === 404) {
-      errFile = 'views/error/page404.ejs';
-    } else if(err.status === 500) {
-      errFile = 'views/error/page500.ejs';
-    }
-  }
+//   if(env !== 'development') {
+//     if(err.status === 404) {
+//       errFile = 'views/error/page404.ejs';
+//     } else if(err.status === 500) {
+//       errFile = 'views/error/page500.ejs';
+//     }
+//   }
 
-  var template = fs.readFileSync(path.join(__dirname, errFile), 'utf-8');
+//   var template = fs.readFileSync(path.join(__dirname, errFile), 'utf-8');
 
-  err.status = err.status;
-  var html = ejs.render(template, err);
+//   err.status = err.status;
+//   var html = ejs.render(template, err);
 
-  this.res.status = err.status;
-  this.res.setHeader('content-type','text/html; charset=utf-8');
-  this.res.end(html);
-};
+//   this.res.status = err.status;
+//   this.res.setHeader('content-type','text/html; charset=utf-8');
+//   this.res.end(html);
+// };
 
 module.exports = app;
